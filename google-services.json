@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "861458358882",
+    "project_id": "ppv-teclab",
+    "storage_bucket": "ppv-teclab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861458358882:android:27be4317f4a44e4c5ca73b",
+        "android_client_info": {
+          "package_name": "com.santiagogonzalez.ppvteclab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKlXAvzm-mWVKK_EJDp_ENgzKnRbZrLQA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
