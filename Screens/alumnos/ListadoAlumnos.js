@@ -1,20 +1,46 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Card from '../../Componentes/Card'
-
+import { useGestionDeAlumnosContext } from '../../Context/GestionAlumnosContext'
+import { db } from '../../firebase/config';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import Loading from '../../Componentes/Loading/loading';
 const ListadoAlumnos = ({ navigation }) => {
+    const { hasRefreshAlumnos, setHasRefreshAlumnos } = useGestionDeAlumnosContext();
     const [alumnosOriginal, setAlumnosOriginal] = useState([]);
     const [alumnos, setAlumnos] = useState([]);
-
+    const [isLoading, setIsLoading] = useState(true);
     const [inputBuscador, onChangeInputBuscador] = React.useState('');
 
     useEffect(() => {
-        if (alumnos.length == 0 && alumnosOriginal.length == 0) {
-            fetch("data/alumnos.json")
-                .then(response => response.json())
-                .then(data => {setAlumnos(data), setAlumnosOriginal(data)});
-        }
+        refreshAlumnos();
     }, []);
+
+    useEffect(() => {
+        refreshAlumnos();
+    }, [hasRefreshAlumnos]);
+
+    const refreshAlumnos = () => {
+        if (hasRefreshAlumnos) {
+            getAlumnos().then(() => {
+                setIsLoading(false);
+                setHasRefreshAlumnos(false);
+            });
+        }
+    }
+
+    const getAlumnos = async () => {
+        const q = query(collection(db, "alumnos"));
+        const alumnosFromDB = [];
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            let alumno = { id: doc.id }
+            alumno = { ...alumno, ...doc.data() }
+            alumnosFromDB.push(alumno);
+            // doc.data() is never undefined for query doc snapshots
+        });
+        setAlumnos(alumnosFromDB);
+    }
 
     useEffect(() => {
         if (alumnosOriginal.length === 0) {
@@ -46,33 +72,37 @@ const ListadoAlumnos = ({ navigation }) => {
     }
 
     const goToDetalleClase = (alumno) => {
+
         navigation.navigate('detalleAlumno', {
             alumno: alumno
         });
     }
 
     const onPress = () => {
-        navigation.navigate('agregarClase');
+        navigation.navigate('agregarAlumno');
     }
 
     return (
-        <View style={{ padding: 10 }}>
-            <View>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={onChangeInputBuscador}
-                    value={inputBuscador}
-                    placeholder='Buscar por nombre o apellido'
-                />
+        <View style={isLoading ? styles.container : ''}>
+            {isLoading && <Loading />}
+            {!isLoading && <View>
+                <View>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={onChangeInputBuscador}
+                        value={inputBuscador}
+                        placeholder='Buscar por nombre o apellido'
+                    />
 
-            </View>
-            {alumnos?.length > 0 && generarListadoAlumnos()}
-            <View>
-                <TouchableOpacity style={styles.button} onPress={onPress}>
-                    <Text style={{ color: '#ffffff' }}>Agregar alumno</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+                </View>
+                {alumnos?.length > 0 && generarListadoAlumnos()}
+                <View>
+                    <TouchableOpacity style={styles.button} onPress={onPress}>
+                        <Text style={{ color: '#ffffff' }}>Agregar alumno</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>}
+        </View >
     )
 }
 const styles = StyleSheet.create({

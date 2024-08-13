@@ -16,7 +16,7 @@ const ClasesStack = () => {
             }}
             options={{ headerShown: false }}
         >
-            <Stack.Screen name="listadoClases" component={ListadoClases} options={{ title: "Listado de clases", headerShown: true }} />
+            <Stack.Screen name="listadoClases" component={ListadoClases} options={{ title: "Listado de clases", headerShown: true, unmountOnBlur: true }} />
             <Stack.Screen name="agregarClase" component={AgregarClase} options={{ title: "Agregar clase", headerShown: true }}/>
             <Stack.Screen name="detalleClase" component={DetalleClase} options={{ title: "Detalle de clase", headerShown: true }}/>
         </Stack.Navigator>

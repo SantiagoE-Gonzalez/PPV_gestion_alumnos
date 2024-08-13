@@ -1,23 +1,41 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from '../../Componentes/Card'
+import { useGestionDeAlumnosContext } from '../../Context/GestionAlumnosContext'
+import { doc, getDoc } from "firebase/firestore";
+import { db } from '../../firebase/config';
+import Titulo from '../../Componentes/Titulo';
 
 const DetalleClase = () => {
+    const { claseId } = useGestionDeAlumnosContext();
     const [text, onChangeText] = React.useState('');
+    const [clase, setClase] = useState();
+    let docSnap;
+    useEffect(() => {
+        async function getData() {
+            const docRef = doc(db, "clases", claseId);
+            docSnap = await getDoc(docRef);
+        }
+        getData().then(() => {
+            console.log(docSnap.data());
+            setClase(docSnap.data());
+        });
+    }, [claseId]);
 
-    const onPress = () => {
-        alert("hola");
+    const generarVistaClase = () => {
+        return <View>
+            <Text>{claseId}</Text>
+            <Titulo>{clase.nombre}</Titulo>
+            <Titulo>{clase.descripcion}</Titulo>
+            <Text>{clase.dia}</Text>
+            <Text>{clase.hora}</Text>
+            <Text>{clase.limite}</Text>
+        </View>
     }
 
     return (
         <View style={{ padding: 10 }}>
-            <View>
-                <Text>Danza Infantil</Text>
-                <Text>18:00</Text>
-                <Text>Lunes</Text>
-
-            </View>
-
+            {clase && generarVistaClase()}
         </View>
     )
 }

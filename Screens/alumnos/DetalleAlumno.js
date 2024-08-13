@@ -29,7 +29,7 @@ const DetalleAlumno = ({ route }) => {
                 <TextInput
                     style={styles.input}
                     onChangeText={onChangeText}
-                    value={alumno.nroTelefono}
+                    value={alumno.telefono}
                     placeholder='Nro de telefono'
                 />
                 <TextInput
@@ -47,7 +47,7 @@ const DetalleAlumno = ({ route }) => {
                 <TextInput
                     style={styles.input}
                     onChangeText={onChangeText}
-                    value={alumno.cantidadClasesDisponibles}
+                    value={alumno.clasesDisponibles}
                     placeholder='Cantidad de clases disponibles'
                 />
             </View>

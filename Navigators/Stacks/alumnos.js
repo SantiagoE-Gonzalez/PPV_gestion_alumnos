@@ -16,9 +16,9 @@ const AlumnosStack = () => {
             }}
             options={{ headerShown: false }}
         >
-            <Stack.Screen name="listadoAlumnos" component={ListadoAlumnos} options={{ title: "Listado de alumnos", headerShown: true }} />
-            <Stack.Screen name="agregarAlumno" component={AgregarAlumno} options={{ title: "Agregar alumno", headerShown: true }}/>
-            <Stack.Screen name="detalleAlumno" component={DetalleAlumno} options={{ title: "Detalle de alumno", headerShown: true }}/>
+            <Stack.Screen name="listadoAlumnos" component={ListadoAlumnos} options={{ title: "Listado de alumnos", headerShown: true, unmountOnBlur: true }} />
+            <Stack.Screen name="agregarAlumno" component={AgregarAlumno} options={{ title: "Agregar alumno", headerShown: true }} />
+            <Stack.Screen name="detalleAlumno" component={DetalleAlumno} options={{ title: "Detalle de alumno", headerShown: true }} />
         </Stack.Navigator>
     )
 }

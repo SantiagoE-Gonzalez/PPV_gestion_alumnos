@@ -4,14 +4,32 @@ import Card from '../../Componentes/Card'
 import { doc, getDoc } from "firebase/firestore";
 import { db } from '../../firebase/config';
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { useGestionDeAlumnosContext } from '../../Context/GestionAlumnosContext';
+import Loading from '../../Componentes/Loading/loading';
 
 const ListadoClases = ({ navigation }) => {
+    const { setClaseId, hasRefreshClases, setHasRefreshClases } = useGestionDeAlumnosContext();
+    const [isLoading, setIsLoading] = useState(true);
     const [clases, setClases] = useState([]);
 
 
     useEffect(() => {
-        getClases();
+        refreshClases();
+    }, [hasRefreshClases]);
+
+    
+    useEffect(() => {
+        refreshClases();
     }, []);
+
+    const refreshClases = () => {
+        if (hasRefreshClases) {
+            getClases().then(() => {
+                setIsLoading(false);
+                setHasRefreshClases(false);
+            });
+        }
+    }
 
 
     const getClases = async () => {
@@ -19,9 +37,10 @@ const ListadoClases = ({ navigation }) => {
         const clasesFromBD = [];
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            clasesFromBD.push(doc.data());
+            let clase = { id: doc.id }
+            clase = { ...clase, ...doc.data() }
+            clasesFromBD.push(clase);
             // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
         });
         setClases(clasesFromBD);
     }
@@ -29,14 +48,15 @@ const ListadoClases = ({ navigation }) => {
     const generarListadoClases = () => {
         let cards = [];
         clases.forEach(element => {
-            console.log(element);
-            cards.push(<Card key={element.nombre} titulo={element.nombre} subtitulo={element.hora} onPress={() => goToDetalleClase(1)} />)
+            cards.push(<Card key={element.id} titulo={element.nombre} subtitulo={element.hora} onPress={() => goToDetalleClase(element.id)} />)
         })
         return <View>
             {cards}
         </View>
     }
     const goToDetalleClase = (id) => {
+        console.log(id);
+        setClaseId(id);
         navigation.navigate('detalleClase');
     }
 
@@ -45,15 +65,18 @@ const ListadoClases = ({ navigation }) => {
     }
 
     return (
-        <View style={{ padding: 10 }}>
-            <View>
-                {clases.length > 0 && generarListadoClases()}
-            </View>
-            <View>
-                <TouchableOpacity style={styles.button} onPress={onPress}>
-                    <Text style={{ color: '#ffffff' }}>Agregar clase nueva</Text>
-                </TouchableOpacity>
-            </View>
+        <View style={isLoading ? styles.container : ''}>
+            {isLoading && <Loading />}
+            {!isLoading && <View>
+                <View>
+                    {clases.length > 0 && generarListadoClases()}
+                </View>
+                <View>
+                    <TouchableOpacity style={styles.button} onPress={onPress}>
+                        <Text style={{ color: '#ffffff' }}>Agregar clase nueva</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>}
         </View>
     )
 }
